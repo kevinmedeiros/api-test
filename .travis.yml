@@ -1,11 +1,22 @@
 language: go
 
 go:
-  - "1.x"
-  - "1.8"
-  - "1.10.x"
-  - master
+  - 1.6
+  - 1.8
+  - tip
+
+services:
+  - mysql
+
+before_install:
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS test_api;'
+
+install:
+  - go get golang.org/x/tools/cmd/cover
+  - go get github.com/mattn/goveralls
+  - go get github.com/gorilla/mux
+  - go get github.com/go-sql-driver/mysql
 
 script:
-  - ./pre-commit
-  - go test -v
+  - go test -covermode=count -coverprofile=coverage.out
+  - $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci
